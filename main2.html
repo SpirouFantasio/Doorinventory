@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+// Clear form for new entry
+function clearCurrentForm() {
+if (confirm(‘Möchten Sie wirklich alle Eingaben löschen und neu beginnen?’)) {
+existingDataIndex = -1;
+photos = [];
+currentRating = 0;
+
+```
+            // Reset form
+            document.getElementById('inventoryForm').reset();
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+            document.getElementById('photoPreview').innerHTML = '';
+            document.getElementById('rating').value = '';
+            
+            // Reset UI
+            document.getElementById('existingDataMessage').style.display = 'none';
+            document.getElementById('submitButton').innerHTML = '💾 Datensatz speichern';
+            document.getElementById('clearButton').style.display = 'none';
+            
+            // Reset header
+            const now = new Date();
+            document.querySelector('.header p').innerHTML = `Erfassung vom ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE')}`;
+        }
+    }<!DOCTYPE html>
+```
 
 <html lang="de">
 <head>
