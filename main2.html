@@ -243,6 +243,10 @@
             ✅ Datensatz erfolgreich gespeichert!
         </div>
 
+        <div class="success-message" id="existingDataMessage" style="background: #fef3c7; color: #92400e; display: none;">
+            📋 Bereits erfasste Daten geladen - Sie können diese bearbeiten oder aktualisieren.
+        </div>
+
         <form id="inventoryForm">
             <div class="form-group">
                 <label for="uuid">UUID (aus QR-Code)</label>
@@ -298,8 +302,10 @@
                 <div class="photo-preview" id="photoPreview"></div>
             </div>
 
-            <button type="submit" class="btn-primary">💾 Datensatz speichern</button>
+            <button type="submit" class="btn-primary" id="submitButton">💾 Datensatz speichern</button>
         </form>
+
+        <button class="btn-secondary" onclick="clearCurrentForm()" style="width: 100%; display: none;" id="clearButton">🗑️ Formular leeren (neue Erfassung)</button>
 
         <button class="btn-secondary" onclick="exportData()" style="width: 100%;">📊 Alle Daten exportieren (CSV)</button>
         <button class="btn-secondary" onclick="showAllData()" style="width: 100%;">📋 Gespeicherte Daten anzeigen</button>
@@ -312,6 +318,7 @@
     // App State
     let photos = [];
     let currentRating = 0;
+    let existingDataIndex = -1; // Track if we're editing existing data
 
     // Initialize App
     document.addEventListener('DOMContentLoaded', function() {
@@ -320,12 +327,80 @@
         const uuid = urlParams.get('uuid') || generateDemoUUID();
         document.getElementById('uuid').value = uuid;
 
+        // Check if data already exists for this UUID
+        checkExistingData(uuid);
+
         // Set current timestamp
         const now = new Date();
         document.querySelector('.header p').innerHTML = `Erfassung vom ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE')}`;
     });
 
-    // Generate demo UUID for testing
+    // Check for existing data
+    function checkExistingData(uuid) {
+        const existingData = JSON.parse(localStorage.getItem('inventoryData') || '[]');
+        const foundIndex = existingData.findIndex(item => item.uuid === uuid);
+        
+        if (foundIndex !== -1) {
+            // Data exists, load it into form
+            const data = existingData[foundIndex];
+            existingDataIndex = foundIndex;
+            
+            // Populate form fields
+            document.getElementById('elementType').value = data.elementType;
+            document.getElementById('room').value = data.room;
+            document.getElementById('dimensions').value = data.dimensions || '';
+            document.getElementById('notes').value = data.notes || '';
+            
+            // Set rating
+            if (data.rating) {
+                setRating(data.rating);
+            }
+            
+            // Load photos
+            if (data.photos && data.photos.length > 0) {
+                photos = [...data.photos];
+                updatePhotoPreview();
+            }
+            
+            // Show existing data message
+            document.getElementById('existingDataMessage').style.display = 'block';
+            document.getElementById('submitButton').innerHTML = '✏️ Datensatz aktualisieren';
+            document.getElementById('clearButton').style.display = 'block';
+            
+            // Update header
+            const lastUpdate = new Date(data.timestamp).toLocaleString('de-DE');
+            document.querySelector('.header p').innerHTML = `Zuletzt erfasst: ${lastUpdate} | Wird aktualisiert...`;
+        } else {
+            // No existing data
+            existingDataIndex = -1;
+            document.getElementById('submitButton').innerHTML = '💾 Datensatz speichern';
+            document.getElementById('clearButton').style.display = 'none';
+        }
+    }
+
+    // Clear form for new entry
+    function clearCurrentForm() {
+        if (confirm('Möchten Sie wirklich alle Eingaben löschen und neu beginnen?')) {
+            existingDataIndex = -1;
+            photos = [];
+            currentRating = 0;
+            
+            // Reset form
+            document.getElementById('inventoryForm').reset();
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+            document.getElementById('photoPreview').innerHTML = '';
+            document.getElementById('rating').value = '';
+            
+            // Reset UI
+            document.getElementById('existingDataMessage').style.display = 'none';
+            document.getElementById('submitButton').innerHTML = '💾 Datensatz speichern';
+            document.getElementById('clearButton').style.display = 'none';
+            
+            // Reset header
+            const now = new Date();
+            document.querySelector('.header p').innerHTML = `Erfassung vom ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE')}`;
+        }
+    }
     function generateDemoUUID() {
         return 'demo-' + Math.random().toString(36).substr(2, 8) + '-' + Math.random().toString(36).substr(2, 4);
     }
@@ -414,17 +489,30 @@
 
         // Save to localStorage
         const existingData = JSON.parse(localStorage.getItem('inventoryData') || '[]');
-        existingData.push(formData);
+        
+        if (existingDataIndex !== -1) {
+            // Update existing entry
+            existingData[existingDataIndex] = formData;
+            document.getElementById('successMessage').innerHTML = '✅ Datensatz erfolgreich aktualisiert!';
+        } else {
+            // Add new entry
+            existingData.push(formData);
+            document.getElementById('successMessage').innerHTML = '✅ Datensatz erfolgreich gespeichert!';
+        }
+        
         localStorage.setItem('inventoryData', JSON.stringify(existingData));
 
         // Show success message
+        document.getElementById('existingDataMessage').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
         setTimeout(() => {
             document.getElementById('successMessage').style.display = 'none';
         }, 3000);
 
-        // Reset form
-        resetForm();
+        // Update button text and show clear option
+        document.getElementById('submitButton').innerHTML = '✏️ Datensatz aktualisieren';
+        document.getElementById('clearButton').style.display = 'block';
+        existingDataIndex = existingData.length - 1; // Update index for future edits
     });
 
     function resetForm() {
