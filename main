@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestandsaufnahme - QR Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .header p {
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .form-container {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4f46e5;
+    }
+
+    .uuid-display {
+        background: #f3f4f6;
+        border: 2px dashed #d1d5db;
+        color: #6b7280;
+        font-family: monospace;
+        font-size: 12px;
+    }
+
+    .rating-container {
+        display: flex;
+        gap: 5px;
+    }
+
+    .star {
+        font-size: 24px;
+        color: #d1d5db;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star.active {
+        color: #fbbf24;
+    }
+
+    .photo-container {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+
+    .photo-container:hover {
+        border-color: #4f46e5;
+    }
+
+    .photo-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .photo-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .photo-item img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+    }
+
+    .photo-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(239, 68, 68, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .success-message {
+        background: #d1fae5;
+        color: #065f46;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        display: none;
+    }
+
+    .data-list {
+        margin-top: 20px;
+    }
+
+    .data-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .data-item h4 {
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .data-item p {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding: 10px;
+        }
+        
+        .container {
+            border-radius: 8px;
+        }
+        
+        .form-container {
+            padding: 15px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Bestandsaufnahme</h1>
+            <p>QR-Code basierte Elementerfassung</p>
+        </div>
+
+```
+    <div class="form-container">
+        <div class="success-message" id="successMessage">
+            ✅ Datensatz erfolgreich gespeichert!
+        </div>
+
+        <form id="inventoryForm">
+            <div class="form-group">
+                <label for="uuid">UUID (aus QR-Code)</label>
+                <input type="text" id="uuid" class="uuid-display" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="elementType">Element-Typ</label>
+                <select id="elementType" required>
+                    <option value="">Bitte wählen...</option>
+                    <option value="fenster">Fenster</option>
+                    <option value="tuer">Tür</option>
+                    <option value="tor">Tor</option>
+                    <option value="luke">Luke/Klappe</option>
+                    <option value="sonstiges">Sonstiges</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="room">Raum/Bereich</label>
+                <input type="text" id="room" placeholder="z.B. EG-001, Büro Nord" required>
+            </div>
+
+            <div class="form-group">
+                <label>Zustandsbewertung</label>
+                <div class="rating-container">
+                    <span class="star" data-rating="1">⭐</span>
+                    <span class="star" data-rating="2">⭐</span>
+                    <span class="star" data-rating="3">⭐</span>
+                    <span class="star" data-rating="4">⭐</span>
+                    <span class="star" data-rating="5">⭐</span>
+                </div>
+                <input type="hidden" id="rating" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dimensions">Abmessungen (optional)</label>
+                <input type="text" id="dimensions" placeholder="z.B. B: 120cm x H: 210cm">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notizen/Besonderheiten</label>
+                <textarea id="notes" rows="4" placeholder="Schäden, Besonderheiten, Reparaturbedarf..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Fotos</label>
+                <div class="photo-container" onclick="document.getElementById('photoInput').click()">
+                    <p>📷 Tippen zum Fotografieren</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Mehrere Fotos möglich</p>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" capture="camera" multiple style="display: none;">
+                <div class="photo-preview" id="photoPreview"></div>
+            </div>
+
+            <button type="submit" class="btn-primary">💾 Datensatz speichern</button>
+        </form>
+
+        <button class="btn-secondary" onclick="exportData()" style="width: 100%;">📊 Alle Daten exportieren (CSV)</button>
+        <button class="btn-secondary" onclick="showAllData()" style="width: 100%;">📋 Gespeicherte Daten anzeigen</button>
+
+        <div class="data-list" id="dataList"></div>
+    </div>
+</div>
+
+<script>
+    // App State
+    let photos = [];
+    let currentRating = 0;
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get UUID from URL parameter or generate demo UUID
+        const urlParams = new URLSearchParams(window.location.search);
+        const uuid = urlParams.get('uuid') || generateDemoUUID();
+        document.getElementById('uuid').value = uuid;
+
+        // Set current timestamp
+        const now = new Date();
+        document.querySelector('.header p').innerHTML = `Erfassung vom ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE')}`;
+    });
+
+    // Generate demo UUID for testing
+    function generateDemoUUID() {
+        return 'demo-' + Math.random().toString(36).substr(2, 8) + '-' + Math.random().toString(36).substr(2, 4);
+    }
+
+    // Star Rating System
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            setRating(rating);
+        });
+    });
+
+    function setRating(rating) {
+        currentRating = rating;
+        document.getElementById('rating').value = rating;
+        
+        document.querySelectorAll('.star').forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    // Photo Handling
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        
+        files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photos.push({
+                        name: file.name,
+                        data: e.target.result,
+                        timestamp: new Date().toISOString()
+                    });
+                    updatePhotoPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    function updatePhotoPreview() {
+        const preview = document.getElementById('photoPreview');
+        preview.innerHTML = '';
+
+        photos.forEach((photo, index) => {
+            const div = document.createElement('div');
+            div.className = 'photo-item';
+            div.innerHTML = `
+                <img src="${photo.data}" alt="Photo ${index + 1}">
+                <button class="photo-remove" onclick="removePhoto(${index})">&times;</button>
+            `;
+            preview.appendChild(div);
+        });
+    }
+
+    function removePhoto(index) {
+        photos.splice(index, 1);
+        updatePhotoPreview();
+    }
+
+    // Form Submission
+    document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (currentRating === 0) {
+            alert('Bitte geben Sie eine Zustandsbewertung ab.');
+            return;
+        }
+
+        const formData = {
+            uuid: document.getElementById('uuid').value,
+            elementType: document.getElementById('elementType').value,
+            room: document.getElementById('room').value,
+            rating: currentRating,
+            dimensions: document.getElementById('dimensions').value,
+            notes: document.getElementById('notes').value,
+            photos: photos,
+            timestamp: new Date().toISOString(),
+            gpsLocation: null // Would be populated with geolocation API
+        };
+
+        // Save to localStorage
+        const existingData = JSON.parse(localStorage.getItem('inventoryData') || '[]');
+        existingData.push(formData);
+        localStorage.setItem('inventoryData', JSON.stringify(existingData));
+
+        // Show success message
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+
+        // Reset form
+        resetForm();
+    });
+
+    function resetForm() {
+        document.getElementById('inventoryForm').reset();
+        photos = [];
+        currentRating = 0;
+        document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+        document.getElementById('photoPreview').innerHTML = '';
+        
+        // Generate new demo UUID
+        document.getElementById('uuid').value = generateDemoUUID();
+    }
+
+    // Export Data as CSV
+    function exportData() {
+        const data = JSON.parse(localStorage.getItem('inventoryData') || '[]');
+        
+        if (data.length === 0) {
+            alert('Keine Daten zum Exportieren vorhanden.');
+            return;
+        }
+
+        const csvContent = [
+            ['UUID', 'Element-Typ', 'Raum', 'Zustand', 'Abmessungen', 'Notizen', 'Anzahl Fotos', 'Zeitstempel'].join(','),
+            ...data.map(item => [
+                item.uuid,
+                item.elementType,
+                item.room,
+                item.rating,
+                item.dimensions || '',
+                `"${item.notes || ''}"`,
+                item.photos.length,
+                new Date(item.timestamp).toLocaleString('de-DE')
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `bestandsaufnahme_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    }
+
+    // Show All Data
+    function showAllData() {
+        const data = JSON.parse(localStorage.getItem('inventoryData') || '[]');
+        const dataList = document.getElementById('dataList');
+        
+        if (data.length === 0) {
+            dataList.innerHTML = '<p style="text-align: center; color: #6b7280;">Noch keine Daten erfasst.</p>';
+            return;
+        }
+
+        dataList.innerHTML = '<h3>Gespeicherte Datensätze (' + data.length + ')</h3>';
+        
+        data.reverse().forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'data-item';
+            div.innerHTML = `
+                <h4>${item.elementType.charAt(0).toUpperCase() + item.elementType.slice(1)} - ${item.room}</h4>
+                <p><strong>UUID:</strong> ${item.uuid}</p>
+                <p><strong>Zustand:</strong> ${'⭐'.repeat(item.rating)} (${item.rating}/5)</p>
+                <p><strong>Abmessungen:</strong> ${item.dimensions || 'Nicht angegeben'}</p>
+                <p><strong>Fotos:</strong> ${item.photos.length} Stück</p>
+                <p><strong>Notizen:</strong> ${item.notes || 'Keine'}</p>
+                <p><strong>Erfasst:</strong> ${new Date(item.timestamp).toLocaleString('de-DE')}</p>
+            `;
+            dataList.appendChild(div);
+        });
+    }
+
+    // Service Worker for PWA capabilities (optional)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            // Service Worker registration would go here for offline functionality
+        });
+    }
+</script>
+```
+
+</body>
+</html>
