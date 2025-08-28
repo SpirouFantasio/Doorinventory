@@ -14,8 +14,12 @@
 
 ```
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #0a0a0a;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1), transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2), transparent 50%);
         min-height: 100vh;
         padding: 20px;
     }
@@ -23,31 +27,51 @@
     .container {
         max-width: 600px;
         margin: 0 auto;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
         overflow: hidden;
     }
 
     .header {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         color: white;
-        padding: 20px;
+        padding: 30px 20px;
         text-align: center;
+        position: relative;
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
     }
 
     .header h1 {
-        font-size: 24px;
-        margin-bottom: 5px;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
     }
 
     .header p {
-        opacity: 0.9;
+        opacity: 0.8;
         font-size: 14px;
+        font-weight: 400;
     }
 
     .form-container {
-        padding: 20px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.02);
     }
 
     .form-group {
@@ -57,35 +81,48 @@
     .form-group label {
         display: block;
         font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-        font-size: 14px;
+        color: #f3f4f6;
+        margin-bottom: 10px;
+        font-size: 15px;
+        letter-spacing: 0.3px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
         width: 100%;
-        padding: 12px;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
         font-size: 16px;
-        transition: border-color 0.3s;
+        color: #f3f4f6;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: rgba(243, 244, 246, 0.5);
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #4f46e5;
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
 
     .uuid-display {
-        background: #f3f4f6;
-        border: 2px dashed #d1d5db;
-        color: #6b7280;
-        font-family: monospace;
-        font-size: 12px;
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #9ca3af !important;
+        font-family: 'SF Mono', Consolas, monospace;
+        font-size: 13px;
+        letter-spacing: 0.5px;
     }
 
     .rating-container {
@@ -94,27 +131,43 @@
     }
 
     .star {
-        font-size: 24px;
-        color: #d1d5db;
+        font-size: 28px;
+        color: rgba(255, 255, 255, 0.2);
         cursor: pointer;
-        transition: color 0.2s;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+
+    .star:hover {
+        transform: scale(1.1);
+        color: rgba(255, 215, 0, 0.8);
     }
 
     .star.active {
-        color: #fbbf24;
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     }
 
     .photo-container {
-        border: 2px dashed #d1d5db;
-        border-radius: 8px;
-        padding: 20px;
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        padding: 30px 20px;
         text-align: center;
         cursor: pointer;
-        transition: border-color 0.3s;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
     }
 
     .photo-container:hover {
-        border-color: #4f46e5;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .photo-container p {
+        color: #f3f4f6;
+        font-weight: 500;
     }
 
     .photo-preview {
@@ -126,8 +179,9 @@
 
     .photo-item {
         position: relative;
-        border-radius: 8px;
+        border-radius: 12px;
         overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .photo-item img {
@@ -138,79 +192,131 @@
 
     .photo-remove {
         position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(239, 68, 68, 0.8);
+        top: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.8);
         color: white;
         border: none;
         border-radius: 50%;
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        backdrop-filter: blur(10px);
+        transition: all 0.2s ease;
+    }
+
+    .photo-remove:hover {
+        background: rgba(239, 68, 68, 0.9);
+        transform: scale(1.1);
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: white;
-        border: none;
-        padding: 14px 28px;
-        border-radius: 8px;
+        background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
+        color: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 18px 32px;
+        border-radius: 16px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         width: 100%;
-        margin-top: 20px;
-        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 30px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(10px);
     }
 
     .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    }
+
+    .btn-primary:active {
+        transform: translateY(-1px);
     }
 
     .btn-secondary {
-        background: #6b7280;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #f3f4f6;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 14px 24px;
+        border-radius: 12px;
         font-size: 14px;
+        font-weight: 600;
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     .success-message {
-        background: #d1fae5;
-        color: #065f46;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 25px;
         text-align: center;
+        font-weight: 600;
         display: none;
+        backdrop-filter: blur(10px);
     }
 
     .data-list {
-        margin-top: 20px;
+        margin-top: 30px;
+    }
+
+    .data-list h3 {
+        color: #f3f4f6;
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
     }
 
     .data-item {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 15px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .data-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .data-item h4 {
-        color: #374151;
-        margin-bottom: 8px;
+        color: #f9fafb;
+        margin-bottom: 12px;
+        font-size: 18px;
+        font-weight: 700;
     }
 
     .data-item p {
-        color: #6b7280;
+        color: #d1d5db;
         font-size: 14px;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        font-weight: 400;
+    }
+
+    .data-item p strong {
+        color: #f3f4f6;
+        font-weight: 600;
     }
 
     @media (max-width: 480px) {
@@ -243,7 +349,7 @@
             ✅ Datensatz erfolgreich gespeichert!
         </div>
 
-        <div class="success-message" id="existingDataMessage" style="background: #fef3c7; color: #92400e; display: none;">
+        <div class="success-message" id="existingDataMessage" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); display: none;">
             📋 Bereits erfasste Daten geladen - Sie können diese bearbeiten oder aktualisieren.
         </div>
 
@@ -562,7 +668,7 @@
         const dataList = document.getElementById('dataList');
         
         if (data.length === 0) {
-            dataList.innerHTML = '<p style="text-align: center; color: #6b7280;">Noch keine Daten erfasst.</p>';
+            dataList.innerHTML = '<p style="text-align: center; color: #9ca3af; font-style: italic;">Noch keine Daten erfasst.</p>';
             return;
         }
 
